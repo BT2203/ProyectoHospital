@@ -30,7 +30,7 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label>Dirección:</label>
-                    <input type="number" class="form-control" name="direccion" value="{{$hospital->direccion}}">
+                    <input type="text" class="form-control" name="direccion" value="{{$hospital->direccion}}">
                 </div>
             </div>
             <div class="form-row">

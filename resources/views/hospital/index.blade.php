@@ -36,7 +36,8 @@
     <th>Acciones</th>
 </tr>
 </thead>
-<tbody id="tablaDatos">
+{{-- <tbody id="tablaDatos"> --}}
+<tbody>
     @foreach ($hospitals as $hospital)
         <tr>
             <td>{{$hospital->nombre}}</td>
@@ -45,9 +46,9 @@
             <td>
                 <form action="{{route('hospital.destroy', $hospital->id)}}" method="post">
                 <a href="{{route('hospital.show', $hospital->id)}}" class="btn btn-link"><span class="oi oi-eye"></span></a>
-                {{-- <a href="{{route('hospital.edit', $hospital->id)}}" class="btn btn-link"><span class="oi oi-pencil"></span></a> --}}
+                <a href="{{route('hospital.edit', $hospital->id)}}" class="btn btn-link"><span class="oi oi-pencil"></span></a>
                 <!-- Button trigger modal -->
-                <button type="button" data-toggle="modal" data-target="#modalEditar" value="{{$hospital->id}}" onclick="mostrar(this)" class="btn btn-link"><span class="oi oi-pencil"></span></button>
+                {{-- <button type="button" data-toggle="modal" data-target="#modalEditar" value="{{$hospital->id}}" onclick="mostrar(this)" class="btn btn-link"><span class="oi oi-pencil"></span></button> --}}
                 @csrf
                 @method('DELETE')
                 <button type="submit" onclick="return confirm('¿Desea eliminar estos datos?')" class="btn btn-link"><span class="oi oi-trash"></span></button>
@@ -65,14 +66,11 @@
 <br>
 <div>
     <a href="{{route('hospital.create')}} "><button class="btn btn-primary">Registrar Hospital</button></a>        
-    {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalRegistro">
-        Registrar Hospital
-    </button> --}}
 </div>
 </div>
 </div>
 
-<script>
+{{-- <script>
 
 function mostrar(btn){
 console.log(btn.value);
@@ -118,6 +116,6 @@ function cargarDatos(){
     });
 
 }
-</script>
+</script> --}}
 
 @endsection

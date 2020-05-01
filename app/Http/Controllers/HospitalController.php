@@ -47,8 +47,8 @@ class HospitalController extends Controller
         {
             return redirect()->route('hospital.index');
         }
-        // return view('hospital.insert');
-        return view('hospital.create');
+        return view('hospital.insert');
+        // return view('hospital.create');
     }
 
     /**
@@ -59,23 +59,23 @@ class HospitalController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->ajax())
-        {
-            App\Hospital::create($request->all());
-            return response()->json([
-                'mensaje'=>'Creado'
-            ]);
-        }
+        // if($request->ajax())
+        // {
+        //     App\Hospital::create($request->all());
+        //     return response()->json([
+        //         'mensaje'=>'Creado'
+        //     ]);
+        // }
         
-        // $request->validate([
-        //     'nombre' => 'required',
-        //     'direccion' => 'required',
-        //     'telefono' => 'required',
-        // ]);
-        // App\Hospital::create($request->all());
+        $request->validate([
+            'nombre' => 'required',
+            'direccion' => 'required',
+            'telefono' => 'required',
+        ]);
+        App\Hospital::create($request->all());
 
-        // return redirect()->route('hospital.index')
-        //                 ->with('exito','Se ha registrado el Hospital correctamente');
+        return redirect()->route('hospital.index')
+                        ->with('exito','Se ha registrado el Hospital correctamente');
     }
 
     /**
@@ -103,10 +103,10 @@ class HospitalController extends Controller
             return redirect()->route('hospital.index');
         }
         $hospital = App\Hospital::findorfail($id);
-        // return view('hospital.edit', compact('hospital'));
-        return response()->json([
-            $hospital
-        ]);
+        return view('hospital.edit', compact('hospital'));
+        // return response()->json([
+        //     $hospital
+        // ]);
     }
 
     /**
@@ -127,11 +127,11 @@ class HospitalController extends Controller
         $hospital = App\Hospital::findorfail($id);
         $hospital->update($request->all());
 
-        return response()->json([
-            'mensaje' => 'Modificado'
-        ]);
-        // return redirect()->route('hospital.index')
-        //                 ->with('exito','Se ha modificado el Hospital correctamente');
+        // return response()->json([
+        //     'mensaje' => 'Modificado'
+        // ]);
+        return redirect()->route('hospital.index')
+                        ->with('exito','Se ha modificado el Hospital correctamente');
     }
 
     /**
