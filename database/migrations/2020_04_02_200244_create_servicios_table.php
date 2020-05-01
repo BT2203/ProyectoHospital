@@ -15,8 +15,8 @@ class CreateServiciosTable extends Migration
     {
         Schema::create('servicios', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('descripcion');
             $table->string('fecha');
+            $table->string('descripcion');
             $table->bigInteger('idHospital')->unsigned();
             $table->foreign('idHospital')->references('id')->on('hospitals');
             $table->bigInteger('idLaboratorio')->unsigned();

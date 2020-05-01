@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App;
+use Gate;
 use Illuminate\Http\Request;
 
 class PacienteController extends Controller
@@ -12,8 +13,16 @@ class PacienteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request) {
+         
+            $consulta = $request->buscar;
+            $pacientes = App\Paciente::where('nombre', 'LIKE', '%' . $consulta . '%')
+                                    ->orderby('nombre', 'asc')->get();
+
+            return view('paciente.index',compact('pacientes','consulta'));
+        }
         $pacientes = App\Paciente::orderby('nombre', 'asc')->get();
         return view('paciente.index',compact('pacientes'));
     }
@@ -25,6 +34,10 @@ class PacienteController extends Controller
      */
     public function create()
     {
+        if (Gate::denies('crear-paciente'))
+        {
+            return redirect()->route('paciente.index');
+        }
         return view('paciente.insert');
     }
 
@@ -59,6 +72,7 @@ class PacienteController extends Controller
      */
     public function show($id)
     {
+       
         $paciente = App\Paciente::findorfail($id);
         return view('paciente.view', compact('paciente'));
     }
@@ -70,6 +84,10 @@ class PacienteController extends Controller
      */
     public function edit($id)
     {
+        if (Gate::denies('editar-paciente'))
+        {
+            return redirect()->route('paciente.index');
+        }
         $paciente = App\Paciente::findorfail($id);
         return view('paciente.edit', compact('paciente'));
     }
@@ -107,6 +125,10 @@ class PacienteController extends Controller
      */
     public function destroy($id)
     {
+        if (Gate::denies('eliminar-paciente'))
+        {
+            return redirect()->route('paciente.index');
+        }
         $paciente = App\Paciente::findorfail($id);
         $paciente->delete();
 

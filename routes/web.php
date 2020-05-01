@@ -21,5 +21,17 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::resource('Admin/users','Admin\UserController')->middleware('can:administrar-usuarios');
+
 Route::resource('hospital','HospitalController');
 Route::resource('paciente','PacienteController');
+Route::resource('sala','SalaController');
+Route::resource('medico','MedicoController');
+Route::resource('laboratorio','LaboratorioController');
+Route::resource('diagnostico','DiagnosticoController');
+Route::resource('servicio','ServicioController');
+Route::resource('consulta','ConsultaController');
+Route::resource('detdiagnostico','DetdiagnosticoController');
+
+Route::post('hospital/guardar','HospitalController@store');
+Route::get('hospitals/','HospitalController@listar');

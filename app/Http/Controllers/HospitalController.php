@@ -3,17 +3,34 @@
 namespace App\Http\Controllers;
 
 use App;
+use Gate;
 use Illuminate\Http\Request;
 
 class HospitalController extends Controller
 {
+    public function listar()
+    {
+        $hospitals = App\Hospital::orderby('nombre', 'asc')->get();
+        return response()->json([
+            $hospitals
+        ]);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request) {
+         
+            $consulta = $request->buscar;
+            $hospitals = App\Hospital::where('nombre', 'LIKE', '%' . $consulta . '%')
+                                    ->orderby('nombre', 'asc')->get();
+
+        return view('hospital.index',compact('hospitals','consulta'));
+        }
+   
         $hospitals = App\Hospital::orderby('nombre', 'asc')->get();
         return view('hospital.index',compact('hospitals'));
     }
@@ -25,7 +42,13 @@ class HospitalController extends Controller
      */
     public function create()
     {
-        return view('hospital.insert');
+        
+        if (Gate::denies('crear-hospital'))
+        {
+            return redirect()->route('hospital.index');
+        }
+        // return view('hospital.insert');
+        return view('hospital.create');
     }
 
     /**
@@ -36,15 +59,23 @@ class HospitalController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'direccion' => 'required',
-            'telefono' => 'required',
-        ]);
-        App\Hospital::create($request->all());
+        if($request->ajax())
+        {
+            App\Hospital::create($request->all());
+            return response()->json([
+                'mensaje'=>'Creado'
+            ]);
+        }
+        
+        // $request->validate([
+        //     'nombre' => 'required',
+        //     'direccion' => 'required',
+        //     'telefono' => 'required',
+        // ]);
+        // App\Hospital::create($request->all());
 
-        return redirect()->route('hospital.index')
-                        ->with('exito','Se ha registrado el Hospital correctamente');
+        // return redirect()->route('hospital.index')
+        //                 ->with('exito','Se ha registrado el Hospital correctamente');
     }
 
     /**
@@ -67,8 +98,15 @@ class HospitalController extends Controller
      */
     public function edit($id)
     {
+        if (Gate::denies('editar-hospital'))
+        {
+            return redirect()->route('hospital.index');
+        }
         $hospital = App\Hospital::findorfail($id);
-        return view('hospital.edit', compact('hospital'));
+        // return view('hospital.edit', compact('hospital'));
+        return response()->json([
+            $hospital
+        ]);
     }
 
     /**
@@ -89,8 +127,11 @@ class HospitalController extends Controller
         $hospital = App\Hospital::findorfail($id);
         $hospital->update($request->all());
 
-        return redirect()->route('hospital.index')
-                        ->with('exito','Se ha modificado el Hospital correctamente');
+        return response()->json([
+            'mensaje' => 'Modificado'
+        ]);
+        // return redirect()->route('hospital.index')
+        //                 ->with('exito','Se ha modificado el Hospital correctamente');
     }
 
     /**
@@ -101,6 +142,10 @@ class HospitalController extends Controller
      */
     public function destroy($id)
     {
+        if (Gate::denies('eliminar-hospital'))
+        {
+            return redirect()->route('hospital.index');
+        }
         $hospital = App\Hospital::findorfail($id);
         $hospital->delete();
 

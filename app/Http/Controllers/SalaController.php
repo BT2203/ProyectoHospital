@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Sala;
+use App;
+use Gate;
+use App\Paciente;
+use App\Hospital;
 use Illuminate\Http\Request;
 
 class SalaController extends Controller
@@ -12,9 +15,18 @@ class SalaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request) {
+         
+            $consulta = $request->buscar;
+            $salas = App\Sala::where('nombre', 'LIKE', '%' . $consulta . '%')
+                                    ->orderby('nombre', 'asc')->get();
+
+            return view('sala.index',compact('salas','consulta'));
+        }
+        $salas = App\Sala::orderby('nombre', 'asc')->get();
+        return view('sala.index',compact('salas'));
     }
 
     /**
@@ -24,7 +36,13 @@ class SalaController extends Controller
      */
     public function create()
     {
-        //
+        if (Gate::denies('crear-sala'))
+        {
+            return redirect()->route('sala.index');
+        }
+        $pacientes = App\Paciente::orderby('nombre', 'asc')->get();
+        $hospitals = App\Hospital::orderby('nombre', 'asc')->get();
+        return view('sala.insert', compact('pacientes','hospitals'));
     }
 
     /**
@@ -35,7 +53,18 @@ class SalaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombre' => 'required',
+            'cantcamas' => 'required',
+            'idPaciente' => 'required',
+            'idHospital' => 'required',
+       
+        ]);
+
+        App\Sala::create($request->all());
+
+        return redirect()->route('sala.index')
+                        ->with('exito','Se ha registrado la Sala correctamente');
     }
 
     /**
@@ -44,9 +73,14 @@ class SalaController extends Controller
      * @param  \App\Sala  $sala
      * @return \Illuminate\Http\Response
      */
-    public function show(Sala $sala)
+    public function show($id)
     {
-        //
+        $sala = App\Sala::join('pacientes','salas.idPaciente', 'pacientes.id')
+                        ->join('hospitals','salas.idHospital','hospitals.id')
+                        ->select('salas.*', 'pacientes.nombre as paciente','hospitals.nombre as hospital')
+                        ->where('salas.id', $id)
+                        ->first();
+        return view('sala.view', compact('sala'));
     }
 
     /**
@@ -55,9 +89,16 @@ class SalaController extends Controller
      * @param  \App\Sala  $sala
      * @return \Illuminate\Http\Response
      */
-    public function edit(Sala $sala)
+    public function edit($id)
     {
-        //
+        if (Gate::denies('editar-sala'))
+        {
+            return redirect()->route('sala.index');
+        }
+        $pacientes = App\Paciente::orderby('nombre', 'asc')->get();
+        $hospitals = App\Hospital::orderby('nombre', 'asc')->get();
+        $sala = App\Sala::findorfail($id);
+        return view('sala.edit', compact('sala','pacientes','hospitals'));
     }
 
     /**
@@ -67,9 +108,21 @@ class SalaController extends Controller
      * @param  \App\Sala  $sala
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Sala $sala)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'nombre' => 'required',
+            'cantcamas' => 'required',
+            'idPaciente' => 'required',
+            'idHospital' => 'required',
+       
+        ]);
+
+        $sala = App\Sala::findorfail($id);
+        $sala->update($request->all());
+
+        return redirect()->route('sala.index')
+                        ->with('exito','Se ha modificado la Sala correctamente');
     }
 
     /**
@@ -78,8 +131,16 @@ class SalaController extends Controller
      * @param  \App\Sala  $sala
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Sala $sala)
+    public function destroy($id)
     {
-        //
+        if (Gate::denies('eliminar-sala'))
+        {
+            return redirect()->route('sala.index');
+        }
+        $sala = App\Sala::findorfail($id);
+        $sala->delete();
+
+        return redirect()->route('sala.index')
+                        ->with('exito','Se ha eliminado la Sala correctamente');
     }
 }

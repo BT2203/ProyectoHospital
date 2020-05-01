@@ -17,8 +17,6 @@ class CreateDiagnosticosTable extends Migration
             $table->bigIncrements('id');
             $table->string('tipo');
             $table->string('complicaciones');
-            $table->bigInteger('idPaciente')->unsigned();
-            $table->foreign('idPaciente')->references('id')->on('pacientes');
             $table->timestamps();
         });
     }

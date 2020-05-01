@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Sistema de Información Hospitales</title>
+        <title>Sistema de Información</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
@@ -19,7 +19,7 @@
                 height: 100vh;
                 margin: 0;
             }
-
+    
             .full-height {
                 height: 100vh;
             }
@@ -81,14 +81,9 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Sistema de Información Hospitales
+                        Sistema de Información
                 </div>
 
-                <div class="links">
-                <a href="{{route('hospital.index')}}">Hospital</a>
-                <a href="{{route('paciente.index')}}">Paciente</a>
-               
-                </div>
             </div>
         </div>
     </body>

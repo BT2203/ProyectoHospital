@@ -44,13 +44,22 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label>Fecha de Nacimiento:</label>
-                    <input type="number" class="form-control" name="nacimiento" value="{{$paciente->nacimiento}}">
+                    <input type="date" class="form-control" name="nacimiento" value="{{$paciente->nacimiento}}">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label>Genero:</label>
-                    <input type="text" class="form-control" name="genero" value="{{$paciente->genero}}">
+                    <div class="form-check">
+                     
+                    <input type="radio" name="genero" value="Masculino">
+                    <label for="hombre">Masculino</label>
+            
+                    <input type="radio" name="genero" value="Femenino">
+                    <label for="mujer">Femenino</label>
+                
+                    </div>
+                    {{-- <input type="text" class="form-control" name="genero" value="{{$paciente->genero}}"> --}}
                 </div>
             </div>
             <div class="form-row">

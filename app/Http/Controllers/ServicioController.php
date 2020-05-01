@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Servicio;
+use App;
+use Gate;
+use App\Hospital;
+use App\Laboratorio;
 use Illuminate\Http\Request;
 
 class ServicioController extends Controller
@@ -14,7 +17,9 @@ class ServicioController extends Controller
      */
     public function index()
     {
-        //
+        $hospitals = App\Hospital::orderby('nombre', 'asc')->get();
+        $servicios = App\Servicio::orderby('fecha', 'asc')->get();
+        return view('servicio.index',compact('servicios','hospitals'));
     }
 
     /**
@@ -24,7 +29,13 @@ class ServicioController extends Controller
      */
     public function create()
     {
-        //
+        if (Gate::denies('crear-servicio'))
+        {
+            return redirect()->route('servicio.index');
+        }
+        $hospitals = App\Hospital::orderby('nombre', 'asc')->get();
+        $laboratorios = App\Laboratorio::orderby('nombre', 'asc')->get();
+        return view('servicio.insert', compact('hospitals','laboratorios'));
     }
 
     /**
@@ -35,7 +46,18 @@ class ServicioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'fecha' => 'required',
+            'descripcion' => 'required',
+            'idHospital' => 'required',
+            'idLaboratorio' => 'required',
+       
+        ]);
+
+        App\Servicio::create($request->all());
+
+        return redirect()->route('servicio.index')
+                        ->with('exito','Se ha registrado el Servicio correctamente');
     }
 
     /**
@@ -44,9 +66,14 @@ class ServicioController extends Controller
      * @param  \App\Servicio  $servicio
      * @return \Illuminate\Http\Response
      */
-    public function show(Servicio $servicio)
+    public function show($id)
     {
-        //
+        $servicio = App\Servicio::join('hospitals','servicios.idHospital', 'hospitals.id')
+                                    ->join('laboratorios','servicios.idLaboratorio','laboratorios.id')
+                                    ->select('servicios.*', 'hospitals.nombre as hospital','laboratorios.nombre as laboratorio')
+                                    ->where('servicios.id', $id)
+                                    ->first();
+            return view('servicio.view', compact('servicio'));
     }
 
     /**
@@ -55,9 +82,16 @@ class ServicioController extends Controller
      * @param  \App\Servicio  $servicio
      * @return \Illuminate\Http\Response
      */
-    public function edit(Servicio $servicio)
+    public function edit($id)
     {
-        //
+        if (Gate::denies('editar-servicio'))
+        {
+            return redirect()->route('servicio.index');
+        }
+        $hospitals = App\Hospital::orderby('nombre', 'asc')->get();
+        $laboratorios = App\Laboratorio::orderby('nombre', 'asc')->get();
+        $servicio = App\Servicio::findorfail($id);
+        return view('servicio.edit', compact('servicio','hospitals','laboratorios'));
     }
 
     /**
@@ -67,9 +101,21 @@ class ServicioController extends Controller
      * @param  \App\Servicio  $servicio
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Servicio $servicio)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'fecha' => 'required',
+            'descripcion' => 'required',
+            'idHospital' => 'required',
+            'idLaboratorio' => 'required',
+       
+        ]);
+
+        $servicio = App\Servicio::findorfail($id);
+        $servicio->update($request->all());
+
+        return redirect()->route('servicio.index')
+                        ->with('exito','Se ha modificado el Servicio correctamente');
     }
 
     /**
@@ -78,8 +124,16 @@ class ServicioController extends Controller
      * @param  \App\Servicio  $servicio
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Servicio $servicio)
+    public function destroy($id)
     {
-        //
+        if (Gate::denies('eliminar-servicio'))
+        {
+            return redirect()->route('servicio.index');
+        }
+        $servicio = App\Servicio::findorfail($id);
+        $servicio->delete();
+
+        return redirect()->route('servicio.index')
+                        ->with('exito','Se ha eliminado el Servicio correctamente');
     }
 }

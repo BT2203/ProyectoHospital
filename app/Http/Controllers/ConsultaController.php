@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Consulta;
+use App;
+use Gate;
+use App\Paciente;
+use App\Medico;
 use Illuminate\Http\Request;
 
 class ConsultaController extends Controller
@@ -14,7 +17,10 @@ class ConsultaController extends Controller
      */
     public function index()
     {
-        //
+
+        $pacientes = App\Paciente::orderby('nombre', 'asc')->get();
+        $consultas = App\Consulta::orderby('fecha', 'asc')->get();
+        return view('consulta.index',compact('consultas','pacientes'));
     }
 
     /**
@@ -24,7 +30,13 @@ class ConsultaController extends Controller
      */
     public function create()
     {
-        //
+        if (Gate::denies('crear-consulta'))
+        {
+            return redirect()->route('consulta.index');
+        }
+        $pacientes = App\Paciente::orderby('nombre', 'asc')->get();
+        $medicos = App\Medico::orderby('nombre', 'asc')->get();
+        return view('consulta.insert', compact('pacientes','medicos'));
     }
 
     /**
@@ -35,7 +47,17 @@ class ConsultaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'fecha' => 'required',
+            'idPaciente' => 'required',
+            'idMedico' => 'required',
+       
+        ]);
+
+        App\Consulta::create($request->all());
+
+        return redirect()->route('consulta.index')
+                        ->with('exito','Se ha registrado la Consulta correctamente');
     }
 
     /**
@@ -44,9 +66,14 @@ class ConsultaController extends Controller
      * @param  \App\Consulta  $consulta
      * @return \Illuminate\Http\Response
      */
-    public function show(Consulta $consulta)
+    public function show($id)
     {
-        //
+        $consulta = App\Consulta::join('pacientes','consultas.idPaciente', 'pacientes.id')
+                                ->join('medicos','consultas.idMedico','medicos.id')
+                                ->select('consultas.*', 'pacientes.nombre as paciente','medicos.nombre as medico')
+                                ->where('consultas.id', $id)
+                                ->first();
+        return view('consulta.view', compact('consulta'));
     }
 
     /**
@@ -55,9 +82,16 @@ class ConsultaController extends Controller
      * @param  \App\Consulta  $consulta
      * @return \Illuminate\Http\Response
      */
-    public function edit(Consulta $consulta)
+    public function edit($id)
     {
-        //
+        if (Gate::denies('editar-consulta'))
+        {
+            return redirect()->route('consulta.index');
+        }
+        $pacientes = App\Paciente::orderby('nombre', 'asc')->get();
+        $medicos = App\Medico::orderby('nombre', 'asc')->get();
+        $consulta = App\Consulta::findorfail($id);
+        return view('consulta.edit', compact('consulta','pacientes','medicos'));
     }
 
     /**
@@ -67,9 +101,20 @@ class ConsultaController extends Controller
      * @param  \App\Consulta  $consulta
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Consulta $consulta)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'fecha' => 'required',
+            'idPaciente' => 'required',
+            'idMedico' => 'required',
+       
+        ]);
+
+        $consulta = App\Consulta::findorfail($id);
+        $consulta->update($request->all());
+
+        return redirect()->route('consulta.index')
+                        ->with('exito','Se ha modificado la Consulta correctamente');
     }
 
     /**
@@ -78,8 +123,16 @@ class ConsultaController extends Controller
      * @param  \App\Consulta  $consulta
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Consulta $consulta)
+    public function destroy($id)
     {
-        //
+        if (Gate::denies('eliminar-consulta'))
+        {
+            return redirect()->route('consulta.index');
+        }
+        $consulta = App\Consulta::findorfail($id);
+        $consulta->delete();
+
+        return redirect()->route('consulta.index')
+                        ->with('exito','Se ha eliminado la Consulta correctamente');
     }
 }

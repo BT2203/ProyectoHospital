@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@section('title')
-    Registrar Hospital
-@endsection
-
 @section('content')
 <h1 class="text-center">Registrar Hospital</h1>
 <br><br>
@@ -43,12 +39,11 @@
                 </div>
             </div>
             
-            <div class="form-row">
                 <button type="submit" class="btn btn-success">Registrar Hospital</button>
-            </div>
+          
+                <a href=" {{route('hospital.index')}}" class="btn btn-link">Volver</a>
+               
         </form>
-        <div class="form-row">
-            <a href=" {{route('hospital.index')}}"><button class="btn btn-primary float-left">Volver</button></a>
-         </div>
+      
        </div> 
 @endsection

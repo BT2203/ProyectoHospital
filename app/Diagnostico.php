@@ -3,8 +3,10 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Diagnostico extends Model
 {
-    protected $fillable = ['tipo','complicaciones','idPaciente'];
+    use SoftDeletes;
+    protected $fillable = ['tipo','complicaciones'];
 }

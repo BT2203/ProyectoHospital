@@ -51,7 +51,12 @@
             <div class="form-row">
                 <div class="form-group col-md-5">
                     <label>Genero:</label>
-                    <input type="text" class="form-control" name="genero">
+               
+                    <input type="radio" name="genero" value="Masculino">
+                    <label for="hombre">Masculino</label>
+            
+                    <input type="radio" name="genero" value="Femenino">
+                    <label for="mujer">Femenino</label>
                 </div>
             </div>
             <div class="form-row">
@@ -67,12 +72,11 @@
                 </div>
             </div>
             
-            <div class="form-row">
                 <button type="submit" class="btn btn-success">Registrar Paciente</button>
-            </div>
+        
+                <a href=" {{route('paciente.index')}}" class="btn btn-link">Volver</a>
+          
         </form>
-        <div class="form-row">
-            <a href=" {{route('paciente.index')}}"><button class="btn btn-primary float-left">Volver</button></a>
-         </div>
+    
        </div> 
 @endsection

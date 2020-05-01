@@ -9,6 +9,15 @@
    <h1 class="text-center">Detalle del Paciente</h1>
    <br><br>
 
+   <div class="row">
+      <div class="col-sm-3">
+           <h3>Codigo Paciente:</h3>
+       </div>      
+       <div class="col-sm-3">
+          <p class="lead">{{$paciente->id}}</p>
+       </div> 
+   </div>
+
     <div class="row">
        <div class="col-sm-3">
             <h3>Nombre Paciente:</h3>
@@ -71,6 +80,7 @@
                 <p class="lead">{{$paciente->ncama}}</p>
              </div> 
        </div>
+
         <a href="{{route('paciente.index')}}"><button class="btn btn-primary">Volver</button></a>
         
     </div>
